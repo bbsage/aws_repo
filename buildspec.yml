@@ -18,13 +18,14 @@ phases:
   build:
     commands:
       - echo "打包 Lambda..."
-      - zip -r lambda_package.zip .
+      - zip -r lambda_package.zip main.py
 
   post_build:
     commands:
-      - echo "部署 Lambda 到 AWS..."
-      - aws lambda update-function-code --function-name $LAMBDA_FUNC_NAME --zip-file fileb://lambda_package.zip
-      - echo "部署完成！"
+      - echo "部署準備完成，交由 CodePipeline Deploy 階段處理"
+#      - echo "部署 Lambda 到 AWS..."
+#      - aws lambda update-function-code --function-name $LAMBDA_FUNC_NAME --zip-file fileb://lambda_package.zip
+#      - echo "部署完成！"
 
 artifacts:
   files:
