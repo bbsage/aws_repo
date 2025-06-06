@@ -18,14 +18,19 @@ phases:
       - zip -r lambda_package.zip main.py
 
   post_build:
-    commands:
-      - echo "部署 Lambda 到 AWS..."
-      - aws lambda update-function-code --function-name $LAMBDA_FUNC_NAME --zip-file fileb://lambda_package.zip
-      - echo "部署完成！"
+    - echo "更新 Lambda 原始碼..."
+    - aws lambda update-function-code --function-name $LAMBDA_FUNC_NAME --zip-file fileb://lambda_package.zip
 
-#artifacts:
-#  files:
-#    - lambda_package.zip
+    - echo "發佈新版本..."
+    - VERSION=$(aws lambda publish-version --function-name $LAMBDA_FUNC_NAME --query 'Version' --output text)
+    - echo "發佈版本為: $VERSION"
+
+    - echo "更新 alias $LAMBDA_ALIAS_NAME 指向版本 $VERSION"
+    - aws lambda update-alias --function-name $LAMBDA_FUNC_NAME --name $LAMBDA_ALIAS_NAME --function-version $VERSION
+
+artifacts:
+  files:
+    - lambda_package.zip
 
 #logs:
 #  cloudwatch:
