@@ -25,6 +25,7 @@ phases:
       - echo "更新 Lambda 原始碼..."
       - aws lambda update-function-code --function-name $LAMBDA_FUNC_NAME --zip-file fileb://lambda_package.zip
       - echo "發佈新版本..."
+      - sleep 15
       - VERSION=$(aws lambda publish-version --function-name $LAMBDA_FUNC_NAME --query 'Version' --output text)
       - echo "發佈版本為:$VERSION"
       - echo "更新 alias $LAMBDA_ALIAS_NAME 指向版本 $VERSION"
