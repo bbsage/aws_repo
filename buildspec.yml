@@ -1,15 +1,35 @@
 version: 0.2
 
+env:
+  variables:
+    LAMBDA_FUNC_NAME: "hello_lambda"
+    LAMBDA_ENV_VARIABLE: "FEATURE_ENABLED"
+    LAMBDA_ENV_VARIABLE_VALUE: "true"
+
 phases:
   install:
     runtime-versions:
       python: 3.11
-#    commands:
-#      - pip install -r requirements.txt -t .
+    commands:
+      - echo "安裝依賴..."
+      - pip install -r requirements.txt -t .
+      - echo "安裝完成！"
+
   build:
     commands:
-      - zip -r function.zip .  # 把所有依賴與 main.py 打包成 zip
+      - echo "打包 Lambda..."
+      - zip -r lambda_package.zip .
+
+  post_build:
+    commands:
+      - echo "部署 Lambda 到 AWS..."
+      - aws lambda update-function-code --function-name $LAMBDA_FUNC_NAME --zip-file fileb://lambda_package.zip
+      - echo "部署完成！"
 
 artifacts:
   files:
-    - function.zip
+    - lambda_package.zip
+
+#logs:
+#  cloudwatch:
+#    enabled: true
